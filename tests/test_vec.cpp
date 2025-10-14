@@ -3,17 +3,7 @@
 
 using namespace QuarkLA;
 
-
-class VecTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-    }
-    
-    void TearDown() override {
-    }
-};
-
-TEST_F(VecTest, DefaultConstructor) {
+TEST(VecTest, DefaultConstructor) {
     Vec<3, float> v;
     EXPECT_EQ(v.size(), 3);
     EXPECT_FALSE(v.empty());  // Fixed size, never empty
@@ -23,14 +13,14 @@ TEST_F(VecTest, DefaultConstructor) {
     EXPECT_EQ(v[2], 0.0f);
 }
 
-TEST_F(VecTest, FillConstructor) {
+TEST(VecTest, FillConstructor) {
     Vec<3, float> v(2.0f);
     EXPECT_EQ(v[0], 2.0f);
     EXPECT_EQ(v[1], 2.0f);
     EXPECT_EQ(v[2], 2.0f);
 }
 
-TEST_F(VecTest, InitializerListConstructor) {
+TEST(VecTest, InitializerListConstructor) {
     Vec<3, int> v{1, 2, 3};
     EXPECT_EQ(v[0], 1);
     EXPECT_EQ(v[1], 2);
@@ -44,7 +34,7 @@ TEST_F(VecTest, InitializerListConstructor) {
     EXPECT_EQ(v2[3], 0);
 }
 
-TEST_F(VecTest, ElementAccess) {
+TEST(VecTest, ElementAccess) {
     Vec<3, int> v{10, 20, 30};
     EXPECT_EQ(v[0], 10);
     EXPECT_EQ(v.at(1), 20);
@@ -56,7 +46,7 @@ TEST_F(VecTest, ElementAccess) {
     EXPECT_EQ(cv.at(1), 2);
 }
 
-TEST_F(VecTest, CopyConstructor) {
+TEST(VecTest, CopyConstructor) {
     Vec<3, int> v1{1, 2, 3};
     Vec<3, int> v2(v1);
     EXPECT_EQ(v2.size(), v1.size());
@@ -65,7 +55,7 @@ TEST_F(VecTest, CopyConstructor) {
     EXPECT_EQ(v2[2], v1[2]);
 }
 
-TEST_F(VecTest, AssignmentOperator) {
+TEST(VecTest, AssignmentOperator) {
     Vec<3, int> v1{1, 2, 3};
     Vec<3, int> v2;
     v2 = v1;
@@ -74,7 +64,7 @@ TEST_F(VecTest, AssignmentOperator) {
     EXPECT_EQ(v2[2], 3);
 }
 
-TEST_F(VecTest, MoveSemantics) {
+TEST(VecTest, MoveSemantics) {
     Vec<3, int> v1{1, 2, 3};
     Vec<3, int> v2(std::move(v1));
     EXPECT_EQ(v2[0], 1);
@@ -82,7 +72,7 @@ TEST_F(VecTest, MoveSemantics) {
     EXPECT_EQ(v2[2], 3);
 }
 
-TEST_F(VecTest, ArithmeticOperations) {
+TEST(VecTest, ArithmeticOperations) {
     Vec<3, float> v1{1.0f, 2.0f, 3.0f};
     Vec<3, float> v2{4.0f, 5.0f, 6.0f};
     
@@ -117,14 +107,14 @@ TEST_F(VecTest, ArithmeticOperations) {
     EXPECT_FLOAT_EQ(v8[2], -3.0f);
 }
 
-TEST_F(VecTest, DotProduct) {
+TEST(VecTest, DotProduct) {
     Vec<3, float> v1{1.0f, 2.0f, 3.0f};
     Vec<3, float> v2{4.0f, 5.0f, 6.0f};
     float result = dot(v1, v2);  // 1*4 + 2*5 + 3*6 = 32
     EXPECT_FLOAT_EQ(result, 32.0f);
 }
 
-TEST_F(VecTest, Length) {
+TEST(VecTest, Length) {
     Vec<3, float> v{3.0f, 4.0f, 0.0f};
     float len = length(v);  // sqrt(9 + 16) = 5
     EXPECT_FLOAT_EQ(len, 5.0f);
@@ -136,7 +126,7 @@ TEST_F(VecTest, Length) {
     EXPECT_DOUBLE_EQ(length(unit), 1.0);
 }
 
-TEST_F(VecTest, Normalize) {
+TEST(VecTest, Normalize) {
     Vec<3, float> v{3.0f, 4.0f, 0.0f};
     Vec<3, float> normalized = normalize(v);
     EXPECT_FLOAT_EQ(length(normalized), 1.0f);
@@ -150,7 +140,7 @@ TEST_F(VecTest, Normalize) {
 }
 
 // Exception safety tests
-TEST_F(VecTest, OutOfBoundsAccess) {
+TEST(VecTest, OutOfBoundsAccess) {
     Vec<3, int> v{1, 2, 3};
     EXPECT_THROW(v.at(5), std::out_of_range);
     EXPECT_THROW(v.at(3), std::out_of_range);
@@ -158,7 +148,7 @@ TEST_F(VecTest, OutOfBoundsAccess) {
 }
 
 // Constexpr tests
-TEST_F(VecTest, ConstexprUsage) {
+TEST(VecTest, ConstexprUsage) {
     constexpr Vec<3, int> v{1, 2, 3};
     constexpr int sum = v[0] + v[1] + v[2];
     static_assert(sum == 6, "Constexpr operations should work");
@@ -173,7 +163,7 @@ TEST_F(VecTest, ConstexprUsage) {
 }
 
 // Compound assignment tests
-TEST_F(VecTest, CompoundAssignment) {
+TEST(VecTest, CompoundAssignment) {
     Vec<3, float> v1{1.0f, 2.0f, 3.0f};
     Vec<3, float> v2{4.0f, 5.0f, 6.0f};
     
@@ -199,7 +189,7 @@ TEST_F(VecTest, CompoundAssignment) {
 }
 
 // Comparison operators
-TEST_F(VecTest, ComparisonOperators) {
+TEST(VecTest, ComparisonOperators) {
     Vec<3, int> v1{1, 2, 3};
     Vec<3, int> v2{1, 2, 3};
     Vec<3, int> v3{4, 5, 6};
@@ -211,7 +201,7 @@ TEST_F(VecTest, ComparisonOperators) {
 }
 
 // Approximate equality for floating point
-TEST_F(VecTest, ApproximateEquality) {
+TEST(VecTest, ApproximateEquality) {
     Vec<3, float> v1{1.0f, 2.0f, 3.0f};
     Vec<3, float> v2{1.0000001f, 2.0000001f, 3.0000001f};
     Vec<3, float> v3{1.1f, 2.1f, 3.1f};
@@ -227,7 +217,7 @@ TEST_F(VecTest, ApproximateEquality) {
 }
 
 // Utility methods
-TEST_F(VecTest, UtilityMethods) {
+TEST(VecTest, UtilityMethods) {
     Vec<3, int> v1{1, 2, 3};
     
     v1.fill(5);
@@ -246,7 +236,7 @@ TEST_F(VecTest, UtilityMethods) {
 }
 
 // Hadamard product (element-wise multiplication)
-TEST_F(VecTest, HadamardProduct) {
+TEST(VecTest, HadamardProduct) {
     Vec<3, float> v1{1.0f, 2.0f, 3.0f};
     Vec<3, float> v2{4.0f, 5.0f, 6.0f};
     
@@ -262,7 +252,7 @@ TEST_F(VecTest, HadamardProduct) {
 }
 
 // Distance
-TEST_F(VecTest, Distance) {
+TEST(VecTest, Distance) {
     Vec<2, float> v1{0.0f, 0.0f};
     Vec<2, float> v2{3.0f, 4.0f};
     
@@ -271,7 +261,7 @@ TEST_F(VecTest, Distance) {
 }
 
 // Iterators
-TEST_F(VecTest, Iterators) {
+TEST(VecTest, Iterators) {
     Vec<3, int> v{1, 2, 3};
     
     int sum = 0;
@@ -286,7 +276,7 @@ TEST_F(VecTest, Iterators) {
 }
 
 // Type aliases
-TEST_F(VecTest, TypeAliases) {
+TEST(VecTest, TypeAliases) {
     Vec2f v2f{1.0f, 2.0f};
     EXPECT_EQ(v2f.size(), 2);
     
@@ -298,7 +288,7 @@ TEST_F(VecTest, TypeAliases) {
 }
 
 // Cross product (only for 3D vectors)
-TEST_F(VecTest, CrossProduct) {
+TEST(VecTest, CrossProduct) {
     // Standard basis vectors
     Vec<3, float> i{1.0f, 0.0f, 0.0f};
     Vec<3, float> j{0.0f, 1.0f, 0.0f};
