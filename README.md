@@ -1,7 +1,4 @@
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
-[![Build](https://img.shields.io/github/actions/workflow/status/Diogoperei29/QuarkLA/cmake.yml?branch=main)](https://github.com/Diogoperei29/QuarkLA/actions)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/test_vec.cpp)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20) [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/test_vec.cpp)
 
 # QuarkLA
 
@@ -188,17 +185,15 @@ Current tests cover:
 
 1. **Fixed Size Only**: Dimensions must be known at compile time. No dynamic resizing.
    ```cpp
-   Vec<3, float> v;  // ✅ OK
-   // Vec<n, float> v;  // ❌ n must be constexpr
+   Vec<3, float> v;      //  OK
+   Vec<n, float> v;      //  NOK: n must be constexpr
    ```
 
-2. **Matrix Not Implemented**: `Mat<R, C, T>` is planned but not yet available.
+2. **No SIMD Optimization**: Currently relies on compiler auto-vectorization. Explicit SIMD (SSE, AVX) may be added later.
 
-3. **No SIMD Optimization**: Currently relies on compiler auto-vectorization. Explicit SIMD (SSE, AVX) may be added later.
+3. **Square Root Limitation**: `length()` and `normalize()` use a custom constexpr sqrt implementation that may be less accurate than `std::sqrt` for very large values. For runtime use, consider using `std::sqrt(length_squared(v))`.
 
-4. **Square Root Limitation**: `length()` and `normalize()` use a custom constexpr sqrt implementation that may be less accurate than `std::sqrt` for very large values. For runtime use, consider using `std::sqrt(length_squared(v))`.
-
-5. **Limited Type Support**: Only arithmetic types (`int`, `float`, `double`, etc.) are supported via `static_assert`.
+4. **Limited Type Support**: Only arithmetic types (`int`, `float`, `double`, etc.) are supported via `static_assert`.
 
 ### Design Trade-offs
 
