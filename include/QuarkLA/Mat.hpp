@@ -250,7 +250,7 @@ public:
     
     // Transpose (only for square matrices, in-place)
     constexpr void transpose_inplace() noexcept requires (R == C) {
-        if (R <= 1) return;
+        if constexpr (R <= 1) return;
         for (size_type j = 0; j < R; j++) {
             // top-right triangle
             for (size_type i = 1 + j; i < C; i++) { 
