@@ -20,13 +20,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# Compiler warnings (after external libraries)
-set(WARNING_FLAGS
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Werror
-)
+# Set warning flags based on compiler  (after external libraries)
+if(MSVC)
+    set(WARNING_FLAGS /W4 /WX)
+else()
+    set(WARNING_FLAGS -Wall -Wextra -pedantic -Werror)
+endif()
 
 # Header-only library
 add_library(QuarkLALib INTERFACE)
