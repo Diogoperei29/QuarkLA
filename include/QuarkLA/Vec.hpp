@@ -13,15 +13,23 @@ namespace QuarkLA {
 
 namespace helper {
 
+// constexpr swap members
+template<typename T>
+constexpr void swap(T& a, T& b) noexcept {
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
+
 // Constexpr sqrt using Newton-Raphson
 template<typename T>
-constexpr T constexpr_sqrt_impl(T x, T curr, T prev) noexcept {
+[[nodiscard]] constexpr T constexpr_sqrt_impl(T x, T curr, T prev) noexcept {
     // Converged when difference is small enough
     return curr == prev ? curr : constexpr_sqrt_impl(x, T(0.5) * (curr + x / curr), curr);
 }
 
 template<typename T>
-constexpr T constexpr_sqrt(T x) noexcept {
+[[nodiscard]] constexpr T sqrt(T x) noexcept {
     if (x == T(0) || x == T(1)) 
         return x;
     if (x < T(0))
@@ -64,7 +72,7 @@ public:
     // Initializer list constructor
     constexpr Vec(std::initializer_list<T> init) : data_{} {
         if (init.size() > N) throw std::runtime_error("Too many initializers");
-        std::size_t i = 0;
+        size_type i = 0;
         for (auto it = init.begin(); it != init.end(); it++, i++) {
             data_[i] = *it;
         }
@@ -87,63 +95,63 @@ public:
 
     // -- Size and capacity (compile-time) --
     
-    static constexpr size_type size() noexcept {
+    [[nodiscard]] static constexpr size_type size() noexcept {
         return N;
     }
-    static constexpr size_type dimensions() noexcept {
+    [[nodiscard]] static constexpr size_type dimensions() noexcept {
         return N;
     }
-    constexpr bool empty() const noexcept {
+    [[nodiscard]] constexpr bool empty() const noexcept {
         return false; // can never be empty
     }
 
     // -- Element access --
     
     // Unchecked access 
-    constexpr T& operator[](size_type index) noexcept {
+    [[nodiscard]] constexpr T& operator[](size_type index) noexcept {
         return data_[index];
     }
-    constexpr const T& operator[](size_type index) const noexcept {
+    [[nodiscard]] constexpr const T& operator[](size_type index) const noexcept {
         return data_[index];
     }
     
     // Checked access (throws std::out_of_range if index >= N)
-    constexpr T& at(size_type index) {
+    [[nodiscard]] constexpr T& at(size_type index) {
         if (index >= N) throw std::out_of_range("Index out of bounds");
         return data_[index];
     }
-    constexpr const T& at(size_type index) const{
+    [[nodiscard]] constexpr const T& at(size_type index) const{
         if (index >= N) throw std::out_of_range("Index out of bounds");
         return data_[index];
     }
     
     // Direct data pointer access
-    constexpr T* data() noexcept {
+    [[nodiscard]] constexpr T* data() noexcept {
         return data_.data();
     }
-    constexpr const T* data() const noexcept{
+    [[nodiscard]] constexpr const T* data() const noexcept{
         return data_.data();
     }
 
     // -- Iterators --
     
-    constexpr iterator begin() noexcept {
+    [[nodiscard]] constexpr iterator begin() noexcept {
         return data_.begin();
     }
-    constexpr const_iterator begin() const noexcept { 
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { 
         return data_.begin();
     }
-    constexpr const_iterator cbegin() const noexcept {
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept {
         return data_.cbegin();
     }
     
-    constexpr iterator end() noexcept {
+    [[nodiscard]] constexpr iterator end() noexcept {
         return data_.end();
     }
-    constexpr const_iterator end() const noexcept {
+    [[nodiscard]] constexpr const_iterator end() const noexcept {
         return data_.end();
     }
-    constexpr const_iterator cend() const noexcept {
+    [[nodiscard]] constexpr const_iterator cend() const noexcept {
         return data_.cend();
     }
 
@@ -151,13 +159,13 @@ public:
     
     // Unary plus (returns copy)
     constexpr Vec operator+() const noexcept {
-        return *this;
+        return *this; // Copy
     }
     
     // Unary minus (negation)
     constexpr Vec operator-() const noexcept {
         Vec out; 
-        for (size_t i = 0; i < N; i++)
+        for (size_type i = 0; i < N; i++)
             out.data_[i] = -data_[i];
         return out;
     }
@@ -165,26 +173,26 @@ public:
     // -- Compound assignment operators (vector-vector) -- 
     
     constexpr Vec& operator+=(const Vec& other) noexcept {
-        for (size_t i = 0; i < N; i++)
+        for (size_type i = 0; i < N; i++)
             data_[i] += other[i];
         return *this;
     }
     constexpr Vec& operator-=(const Vec& other) noexcept {
-        for (size_t i = 0; i < N; i++)
+        for (size_type i = 0; i < N; i++)
             data_[i] -= other[i];
         return *this;
     }
     
     // Hadamard product (element-wise multiplication)
     constexpr Vec& operator*=(const Vec& other) noexcept {
-        for (size_t i = 0; i < N; i++)
+        for (size_type i = 0; i < N; i++)
             data_[i] *= other[i];
         return *this;
     }
     
     // Element-wise division
     constexpr Vec& operator/=(const Vec& other) {
-        for (size_t i = 0; i < N; i++) {
+        for (size_type i = 0; i < N; i++) {
             if (other[i] == 0) throw std::runtime_error("Cannot divide by zero");
             data_[i] /= other[i];
         }
@@ -194,13 +202,13 @@ public:
     // -- Compound assignment operators (vector-scalar) --
     
     constexpr Vec& operator*=(T scalar) noexcept  {
-        for (size_t i = 0; i < N; i++)
+        for (size_type i = 0; i < N; i++)
             data_[i] *= scalar;
         return *this;
     }
     constexpr Vec& operator/=(T scalar)  {
         if (scalar == 0) throw std::runtime_error("Cannot divide by zero");
-        for (size_t i = 0; i < N; i++)
+        for (size_type i = 0; i < N; i++)
             data_[i] /= scalar;
         return *this;
     }
@@ -209,7 +217,7 @@ public:
     
     // Fill all elements with a value
     constexpr void fill(T value) noexcept {
-        for (size_t i = 0; i < N; i++) 
+        for (size_type i = 0; i < N; i++) 
             data_[i] = value;
     }
     
@@ -222,26 +230,26 @@ public:
 // -- Binary arithmetic operators (vector-vector) -- 
 
 template<std::size_t N, typename T>
-constexpr Vec<N, T> operator+(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
+[[nodiscard]] constexpr Vec<N, T> operator+(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
     Vec<N, T> out;
-    for (size_t i = 0; i < N; i++) 
+    for (std::size_t i = 0; i < N; i++) 
         out[i] = lhs[i] + rhs[i];
     return out;
 }
 
 template<std::size_t N, typename T>
-constexpr Vec<N, T> operator-(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
+[[nodiscard]] constexpr Vec<N, T> operator-(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
     Vec<N, T> out;
-    for (size_t i = 0; i < N; i++) 
+    for (std::size_t i = 0; i < N; i++) 
         out[i] = lhs[i] - rhs[i];
     return out;
 }
 
 // Hadamard product (element-wise multiplication)
 template<std::size_t N, typename T>
-constexpr Vec<N, T> hadamard(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
+[[nodiscard]] constexpr Vec<N, T> hadamard(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
     Vec<N, T> out;
-    for (size_t i = 0; i < N; i++) 
+    for (std::size_t i = 0; i < N; i++) 
         out[i] = lhs[i] * rhs[i];
     return out;
 }
@@ -249,26 +257,26 @@ constexpr Vec<N, T> hadamard(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcep
 // -- Binary arithmetic operators (vector-scalar) -- 
 
 template<std::size_t N, typename T>
-constexpr Vec<N, T> operator*(const Vec<N, T>& vec, T scalar) noexcept {
+[[nodiscard]] constexpr Vec<N, T> operator*(const Vec<N, T>& vec, T scalar) noexcept {
     Vec<N, T> out;
-    for (size_t i = 0; i < N; i++) 
+    for (std::size_t i = 0; i < N; i++) 
         out[i] = vec[i] * scalar;
     return out;
 }
 
 template<std::size_t N, typename T>
-constexpr Vec<N, T> operator*(T scalar, const Vec<N, T>& vec) noexcept {
+[[nodiscard]] constexpr Vec<N, T> operator*(T scalar, const Vec<N, T>& vec) noexcept {
     Vec<N, T> out;
-    for (size_t i = 0; i < N; i++) 
+    for (std::size_t i = 0; i < N; i++) 
         out[i] = scalar * vec[i];
     return out;
 }
 
 template<std::size_t N, typename T>
-constexpr Vec<N, T> operator/(const Vec<N, T>& vec, T scalar) {
+[[nodiscard]] constexpr Vec<N, T> operator/(const Vec<N, T>& vec, T scalar) {
     if (scalar == 0) throw std::runtime_error("Cannot divide by zero");
     Vec<N, T> out;
-    for (size_t i = 0; i < N; i++) 
+    for (std::size_t i = 0; i < N; i++) 
         out[i] = vec[i] / scalar ;
     return out;
 }
@@ -277,7 +285,7 @@ constexpr Vec<N, T> operator/(const Vec<N, T>& vec, T scalar) {
 
 template<std::size_t N, typename T>
 constexpr bool operator==(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
-    for (size_t i = 0; i < N; i++) {
+    for (std::size_t i = 0; i < N; i++) {
         if (lhs[i] != rhs[i]) {
             return false;
         }
@@ -292,8 +300,8 @@ constexpr bool operator!=(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
 
 // Epsilon-based comparison for floating point types
 template<std::size_t N, typename T>
-constexpr bool approx_equal(const Vec<N, T>& lhs, const Vec<N, T>& rhs, T epsilon = T(1e-6)) noexcept {
-    for (size_t i = 0; i < N; i++) {
+[[nodiscard]] constexpr bool approx_equal(const Vec<N, T>& lhs, const Vec<N, T>& rhs, T epsilon = T(1e-6)) noexcept {
+    for (std::size_t i = 0; i < N; i++) {
         T diff = lhs[i] - rhs[i];
         if (diff < T(0)) 
             diff = -diff; 
@@ -307,31 +315,31 @@ constexpr bool approx_equal(const Vec<N, T>& lhs, const Vec<N, T>& rhs, T epsilo
 
 // Dot product (inner product)
 template<std::size_t N, typename T>
-constexpr T dot(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
+[[nodiscard]] constexpr T dot(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
     T out = T(0);
-    for (size_t i = 0; i < N; i++)
+    for (std::size_t i = 0; i < N; i++)
         out += (lhs[i] * rhs[i]);
     return out;
 }
 
 // Squared length (magnitude squared) - avoids sqrt for performance
 template<std::size_t N, typename T>
-constexpr T length_squared(const Vec<N, T>& vec) noexcept {
+[[nodiscard]] constexpr T length_squared(const Vec<N, T>& vec) noexcept {
     T out = T(0);
-    for (size_t i = 0; i < N; i++)
+    for (std::size_t i = 0; i < N; i++)
         out += (vec[i] * vec[i]);
     return out; 
 }
 
-// Length (for implementation sake) -- just use std::sqrt(length_squared)
+// Length (for implementation sake) -- just use std::sqrt(length_squared) if compiler supports it
 template<std::size_t N, typename T>
-constexpr T length(const Vec<N, T>& vec) noexcept {
-    return helper::constexpr_sqrt(length_squared(vec));
+[[nodiscard]] constexpr T length(const Vec<N, T>& vec) noexcept {
+    return helper::sqrt(length_squared(vec));
 }
 
 // Normalize (for implementation sake) -- use normalize with length
 template<std::size_t N, typename T>
-constexpr Vec<N, T> normalize(const Vec<N, T>& vec) {
+[[nodiscard]] constexpr Vec<N, T> normalize(const Vec<N, T>& vec) {
     T len = length(vec);
     if (len == T(0)) throw std::runtime_error("Cannot normalize zero vector");
     return vec / len;
@@ -339,20 +347,20 @@ constexpr Vec<N, T> normalize(const Vec<N, T>& vec) {
 
 // Normalize
 template<std::size_t N, typename T>
-constexpr Vec<N, T> normalize(const Vec<N, T>& vec, const T len) {
+[[nodiscard]] constexpr Vec<N, T> normalize(const Vec<N, T>& vec, const T len) {
     if (len == T(0)) throw std::runtime_error("Cannot normalize zero vector");
     return vec / len;
 }
 
 // Distance between two vectors
 template<std::size_t N, typename T>
-constexpr T distance(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
+[[nodiscard]] constexpr T distance(const Vec<N, T>& lhs, const Vec<N, T>& rhs) noexcept {
     return length(lhs - rhs);
 }
 
 // Cross product (only Vec<3, T>)
 template<typename T>
-constexpr Vec<3, T> cross(const Vec<3, T>& lhs, const Vec<3, T>& rhs) noexcept {
+[[nodiscard]] constexpr Vec<3, T> cross(const Vec<3, T>& lhs, const Vec<3, T>& rhs) noexcept {
     Vec<3, T> out;
     out[0] = lhs[1]*rhs[2] - lhs[2]*rhs[1];
     out[1] = lhs[2]*rhs[0] - lhs[0]*rhs[2];
@@ -362,6 +370,7 @@ constexpr Vec<3, T> cross(const Vec<3, T>& lhs, const Vec<3, T>& rhs) noexcept {
 
 // -- Type traits and concepts (C++20) -- 
 
+#if __cplusplus >= 202002L
 // Check if a type is a Vec
 template<typename T>
 struct is_vec : std::false_type {};
@@ -384,6 +393,7 @@ concept VecType = is_vec_v<T>;
 
 template<typename T, std::size_t N>
 concept VecOfSize = is_vec_v<T> && T::size() == N;
+#endif
 
 // Type aliases
 

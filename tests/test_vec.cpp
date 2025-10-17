@@ -136,15 +136,17 @@ TEST(VecTest, Normalize) {
     
     // Test that zero vector throws
     Vec<3, float> zero{0.0f, 0.0f, 0.0f};
-    EXPECT_THROW(normalize(zero), std::runtime_error);
+    // (void) avoid [[nodiscard]] warning
+    EXPECT_THROW((void)normalize(zero), std::runtime_error); 
 }
 
 // Exception safety tests
 TEST(VecTest, OutOfBoundsAccess) {
-    Vec<3, int> v{1, 2, 3};
-    EXPECT_THROW(v.at(5), std::out_of_range);
-    EXPECT_THROW(v.at(3), std::out_of_range);
-    EXPECT_NO_THROW(v.at(2));
+    Vec<3, int> v{1, 2, 3}; 
+    // (void) avoid [[nodiscard]] warning
+    EXPECT_THROW((void)v.at(5), std::out_of_range);
+    EXPECT_THROW((void)v.at(3), std::out_of_range);
+    EXPECT_NO_THROW((void)v.at(2));
 }
 
 // Constexpr tests

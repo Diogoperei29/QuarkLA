@@ -25,7 +25,7 @@ set(WARNING_FLAGS
     -Wall
     -Wextra
     -Wpedantic
-    -Wshadow
+    -Werror
 )
 
 # Header-only library
@@ -45,15 +45,22 @@ add_executable(test_vec tests/test_vec.cpp)
 target_link_libraries(test_vec QuarkLALib gtest gtest_main)
 target_compile_options(test_vec PRIVATE ${WARNING_FLAGS})
 
+# Mat tests
+add_executable(test_mat tests/test_mat.cpp)
+target_link_libraries(test_mat QuarkLALib gtest gtest_main)
+target_compile_options(test_mat PRIVATE ${WARNING_FLAGS})
+
 # All tests
 add_executable(test_all 
     tests/test_vec.cpp
+    tests/test_mat.cpp
 )
 target_link_libraries(test_all QuarkLALib gtest gtest_main)
 target_compile_options(test_all PRIVATE ${WARNING_FLAGS})
 
 # Add tests to CTest
 add_test(NAME VecTests COMMAND test_vec)
+add_test(NAME MatTests COMMAND test_mat)
 add_test(NAME AllTests COMMAND test_all)
 
 # Print build information
