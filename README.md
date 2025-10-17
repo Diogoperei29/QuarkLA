@@ -1,4 +1,4 @@
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20) [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20) [![CI](https://github.com/Diogoperei29/QuarkLA/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/Diogoperei29/QuarkLA/actions/workflows/cmake-multi-platform.yml)
 
 # QuarkLA
 
